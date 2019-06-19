@@ -4,6 +4,8 @@
   "description": "a Reddit-like application for users to discuss and share content",
   "main": "src/server.js",
   "dependencies": {
+    "dotenv": "^5.0.0",
+    "ejs": "^2.5.7",
     "express": "^4.16.2"
   },
   "devDependencies": {
@@ -11,7 +13,8 @@
     "request": "^2.83.0"
   },
   "scripts": {
-    "test": "export NODE_ENV=test&& jasmine"
+    "test": "export NODE_ENV=test&& jasmine",
+    "start": "node src/server.js"
   },
   "repository": {
     "type": "git",
