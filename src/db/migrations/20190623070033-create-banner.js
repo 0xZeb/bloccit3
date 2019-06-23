@@ -30,7 +30,7 @@ module.exports = {
           key: "id",
           as: "topicId",
         },
-      },
+      }
     });
   },
   down: (queryInterface, Sequelize) => {

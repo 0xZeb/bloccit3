@@ -23,13 +23,13 @@ fs
   })
   .forEach(file => {
 
-    console.log("output file variable from loop: " + file);
-    console.log("output path.join/dirname/file: " + path.join(__dirname, file));
+  //  console.log("output file variable from loop: " + file);
+    //console.log("output path.join/dirname/file: " + path.join(__dirname, file));
 
     var model = sequelize['import'](path.join(__dirname, file));
 
-    console.log("*************\n");
-    console.log("model: " + JSON.stringify(model));
+    //console.log("*************\n");
+    //console.log("model: " + JSON.stringify(model));
 
 
 

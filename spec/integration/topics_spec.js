@@ -16,7 +16,10 @@ describe("routes : topics", () => {
          description: "There is a lot of them"
        })
         .then((topic) => {
+          //console.log("testing creation process " + JSON.stringify(Topic));
           this.topic = topic;
+
+          //console.log("this.topic " + this.topic);
           done();
         })
         .catch((err) => {
