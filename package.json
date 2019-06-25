@@ -4,6 +4,7 @@
   "description": "a Reddit-like application for users to discuss and share content",
   "main": "src/server.js",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "dotenv": "^5.0.0",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
@@ -12,6 +13,7 @@
     "sequelize": "^4.32.6"
   },
   "devDependencies": {
+    "faker": "^4.1.0",
     "jasmine": "^3.0.0",
     "request": "^2.83.0"
   },
