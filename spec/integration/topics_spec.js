@@ -16,22 +16,15 @@ describe("routes : topics", () => {
          description: "There is a lot of them"
        })
         .then((topic) => {
-          //console.log("testing creation process " + JSON.stringify(Topic));
           this.topic = topic;
-
-          //console.log("this.topic " + this.topic);
           done();
         })
         .catch((err) => {
           console.log(err);
           done();
         });
-
       });
-
     });
-
-
 
 
   describe("GET /topics", () => {
@@ -39,6 +32,7 @@ describe("routes : topics", () => {
     it("should return a status code 200 and all topics", (done) => {
 
       request.get(base, (err, res, body) => {
+        
         expect(res.statusCode).toBe(200);
         expect(err).toBeNull();
         expect(body).toContain("Topics");
@@ -64,6 +58,7 @@ describe("routes : topics", () => {
   });
 
   describe("POST /topics/create", () => {
+
     const options = {
       url: `${base}create`,
       form: {

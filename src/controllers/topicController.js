@@ -8,7 +8,7 @@
         if(err){
           res.redirect(500, "static/index");
         } else {
-          res.render("topics/index", {topics});
+          res.render("topics/index", { topics });
         }
       })
    }, //index
