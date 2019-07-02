@@ -17,8 +17,8 @@
     "jasmine": "^3.0.0",
     "request": "^2.83.0"
   },
-  "scripts": {
-    "test": "export NODE_ENV=test&& jasmine",
+  "scripts": {    
+    "test": "set NODE_ENV=test&& jasmine",
     "start": "node src/server.js"
   },
   "repository": {
