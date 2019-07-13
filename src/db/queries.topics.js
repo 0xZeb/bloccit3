@@ -1,5 +1,7 @@
 const Topic = require("./models").Topic;
 
+const Post = require("./models").Post;
+
 module.exports = {
 
   getAllTopics(callback){
@@ -30,6 +32,15 @@ module.exports = {
 
   getTopic(id, callback){
     return Topic.findById(id)
+
+    //being eager load of associated posts -allows us to pull requested objects and associated ones with 1 request, instead of 2.
+    return Topic.findById(id, {
+
+      include: [{
+        model: Post,
+        as: "posts"
+      }]
+    })
     .then((topic) => {
       callback(null, topic);
     })
