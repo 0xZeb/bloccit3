@@ -30,6 +30,7 @@ module.exports = {
     })
   },
 
+//POST RESOURCE p2
   getTopic(id, callback){
     return Topic.findById(id)
 
