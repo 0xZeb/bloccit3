@@ -1,0 +1,12 @@
+in package.json,
+
+in scripts
+
+-- for a windows machine, must use `set` instead of EXPORT, or youll get errors when you run your tests.
+  //side note: also noticed errors on previously tested code, but perhaps due to cloning and not having the same dependencies loaded
+
+
+-- for a unix distro
+  use `EXPORT` instead of `set` in your *npm test* alias script variable or whatever it is.
+
+postgres is a bitch in windows...
