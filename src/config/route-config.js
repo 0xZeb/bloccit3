@@ -9,13 +9,17 @@ module.exports = {
 
     const postRoutes = require("../routes/posts");
 
+    const flairRoutes = require("../routes/flairs");
+
 
     app.use(staticRoutes);
 
     app.use(topicRoutes);
 
     app.use(adRoutes);
-    
+
     app.use(postRoutes);
+
+    app.use(flairRoutes);
   }
 }
