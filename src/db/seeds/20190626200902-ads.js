@@ -7,9 +7,9 @@ let ads = [];
 for(let i = 1; i <= 15; i++){
   ads.push({
     title: faker.hacker.noun(),
-    description: faker.hacker.say_something_smart();
-    createdAt: new Date();
-    udpatedAt: new Date();
+    description: faker.hacker.phrase(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
   })
 }
 
