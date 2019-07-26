@@ -21,7 +21,7 @@ module.exports = {
 
   addTopic(newTopic, callback) {
     return Topic.create({
-      title:newTopic.title,
+      title: newTopic.title,
       description: newTopic.description
     })
     .then((topic) => {
@@ -41,10 +41,6 @@ module.exports = {
       include: [{
         model: Post,
         as: "posts"
-      },
-      {
-        model: Flair,
-        as: "flairs"
       }]
     })
     .then((topic) => {
