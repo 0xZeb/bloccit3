@@ -5,17 +5,14 @@ module.exports = {
 
     const topicRoutes = require("../routes/topics");
 
-    const adRoutes = require("../routes/ads");
-
     const postRoutes = require("../routes/posts");
-
 
     app.use(staticRoutes);
 
-    app.use(topicRoutes);
+    app.use(topicRoutes);  
 
-    app.use(adRoutes);
-    
     app.use(postRoutes);
+
+
   }
 }

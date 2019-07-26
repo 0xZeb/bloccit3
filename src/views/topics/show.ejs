@@ -9,15 +9,7 @@
     <main class="container">
       <h1><%= topic.title %></h1>
 
-      <a href="/topics/<%= topic.id %>/edit" class="btn btn-warning">Edit</a>
-      <a href="/topics/<%= topic.id %>/posts/new" class="btn btn-success">New Post</a>
 
-      <form style="display:initial" action="/topics/<%= topic.id %>/destroy" method="post">
-      <button type="submit" class="btn btn-danger">Delete</button>
-
-
-
-    </form>
 
       <p><%= topic.description %></p>
       <hr>
@@ -31,6 +23,14 @@
             </li>
           <% }) %>
         </ul>
+
+
+        <a href="/topics/<%= topic.id %>/edit" class="btn btn-warning">Edit</a>
+        <a href="/topics/<%= topic.id %>/posts/new" class="btn btn-success">New Post</a>
+
+        <form style="display:initial" action="/topics/<%= topic.id %>/destroy" method="post">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
     </main>
 
     <% include ../static/partials/baseScripts.ejs %>

@@ -2,6 +2,8 @@ const Topic = require("./models").Topic;
 
 const Post = require("./models").Post;
 
+const Flair = require("./models").Flair;
+
 module.exports = {
 
   getAllTopics(callback){
@@ -19,7 +21,7 @@ module.exports = {
 
   addTopic(newTopic, callback) {
     return Topic.create({
-      title:newTopic.title,
+      title: newTopic.title,
       description: newTopic.description
     })
     .then((topic) => {
@@ -32,7 +34,6 @@ module.exports = {
 
 //POST RESOURCE p2
   getTopic(id, callback){
-    return Topic.findById(id)
 
     //being eager load of associated posts -allows us to pull requested objects and associated ones with 1 request, instead of 2.
     return Topic.findById(id, {
