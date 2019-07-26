@@ -7,6 +7,10 @@
     <main class="container">
       <% include ../static/partials/navbar.ejs %>
 
+      <a href="/topics/new" class="btn btn-success"> Create a Topic </a>
+
+      <hr>
+
       <h1>Topics</h1>
 
       <ul class="list-group">
@@ -15,9 +19,12 @@
 
           <li class="list-group-item">
             <a href="/topics/<%= topic.id %>"> <%= topic.title %> </a>
+            
           </li>
         <% }) %>
       </ul>
+
+
 
     </main>
   </body>

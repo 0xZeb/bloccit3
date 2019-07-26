@@ -7,6 +7,11 @@
     <% include ../static/partials/navbar.ejs %>
 
     <main class="container">
+
+      <% include ../static/partials/messages.ejs %>
+
+        <a href="/topics/<%= post.topicId %>" class = "btn btn-primary"> to Topic</a>
+
       <h1><%= post.title %></h1>
 
       <p><%= post.body %></p>
@@ -16,9 +21,9 @@
        <button type="submit" class="btn btn-danger">Delete</button>
      </form>
 
-     <a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/edit" class="btn btn-warning">Edit</a>
+    <a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/edit" class="btn btn-warning">Edit</a>
 
-  
+
 
     </main>
 

@@ -32,7 +32,7 @@ describe("routes : topics", () => {
     it("should return a status code 200 and all topics", (done) => {
 
       request.get(base, (err, res, body) => {
-        
+
         expect(res.statusCode).toBe(200);
         expect(err).toBeNull();
         expect(body).toContain("Topics");
@@ -86,6 +86,41 @@ describe("routes : topics", () => {
         }
      );
    });
+
+   it("should NOT create a new Topic that fails validations", (done) => {
+
+     const options = {
+       url: `${base}create`,
+       form: {
+          title: "a",
+          description: "b"
+       }
+     };
+
+     request.post(options,
+
+       (err, res, body) => {
+
+
+           Topic.findOne({ where: {title: "a"}})
+           .then((topic) => {
+             expect(topic).toBeNull();
+
+             done();
+           })
+           .catch((err) => {
+             console.log(err);
+             done();
+           });
+        }
+     );
+
+   });
+
+
+
+
+
   }); //end of post tests for creating topics
 
 

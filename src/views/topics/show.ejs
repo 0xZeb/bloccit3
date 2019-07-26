@@ -5,14 +5,27 @@
   </head>
   <body>
     <% include ../static/partials/navbar.ejs %>
+    <% include ../static/partials/messages.ejs %>
 
     <main class="container">
+
+        <a href="/topics" class = "btn btn-primary"> Return to Topics</a>
+
       <h1><%= topic.title %></h1>
 
+        <hr>
+
+        <p><%= topic.description %></p>
 
 
-      <p><%= topic.description %></p>
-      <hr>
+        <a href="/topics/<%= topic.id %>/edit" class="btn btn-warning">Edit</a>
+
+        <form style="display:initial" action="/topics/<%= topic.id %>/destroy" method="post">
+         <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+
+
+
 
     <h1>Posts</h1>
 
@@ -24,13 +37,11 @@
           <% }) %>
         </ul>
 
+        <hr>
 
-        <a href="/topics/<%= topic.id %>/edit" class="btn btn-warning">Edit</a>
         <a href="/topics/<%= topic.id %>/posts/new" class="btn btn-success">New Post</a>
 
-        <form style="display:initial" action="/topics/<%= topic.id %>/destroy" method="post">
-            <button type="submit" class="btn btn-danger">Delete</button>
-        </form>
+
     </main>
 
     <% include ../static/partials/baseScripts.ejs %>
