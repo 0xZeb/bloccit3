@@ -21,6 +21,7 @@ function normalizePort(val){
 
 server.on("listening", () => {
   console.log(`server is listening for requests on port ${server.address().port}`);
-  console.log("BE CONSISTENT, BUILD DILIGENCE");
-  console.log("Be confident to push the time frame");
+  console.log("BE CONSISTENT- establish plan and stick to it!");
+  console.log("BUILD DILIGENCE- inquire further about uncertain topics!");
+  console.log("BE HAPPY!- youre doing it!");
 });

@@ -7,11 +7,15 @@ module.exports = {
 
     const postRoutes = require("../routes/posts");
 
+    const userRoutes = require("../routes/users");
+
     app.use(staticRoutes);
 
-    app.use(topicRoutes);  
+    app.use(topicRoutes);
 
     app.use(postRoutes);
+
+    app.use(userRoutes);
 
 
   }
