@@ -1,63 +1,65 @@
 const sequelize = require("../../src/db/models/index").sequelize;
 const Topic = require("../../src/db/models").Topic;
 const Post = require("../../src/db/models").Post;
+const User = require("../../src/db/models").User;
 
 describe("Post", () => {
 
   beforeEach((done) => {
+     this.topic;
+     this.post;
+     this.user;
 
-//declaring two variables to test.
-    this.topic;
-    this.post;
-    //clear out the db before each test
-    sequelize.sync({ force: true}).then((res) => {
+     sequelize.sync({force: true}).then((res) => {
 
-      //make a new topic each time
-      Topic.create({
-        title: "Expeditions to Alpha Centauri",
-        description: "A compilation of reports from recent visits to the star system."
-      })
-      .then((topic) => {
-        this.topic = topic;
+       User.create({
+         email: "starman@tesla.com",
+         password: "Trekkie4lyfe"
+       })
+       .then((user) => {
+         this.user = user; //store the user
 
-        //make a new post to test each time
-        Post.create({
-          title: "My first visit to proxima centauri b",
-          body: "i saw some rocks.",
-
-//THIS IS THE LINE OF CODE THAT LINKS THE POSTS TO THE TOPIC
-//VERY IMPORTANT!!
-          topicId: this.topic.id
-        })
-        .then((post) => {
-          this.post = post;
-          done();
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        done();
-      });
-    });
-  }); ///end pre test conditions
-
+         Topic.create({
+           title: "Expeditions to Alpha Centauri",
+           description: "A compilation of reports from recent visits to the star system.",
+           posts: [{
+             title: "My first visit to Proxima Centauri b",
+             body: "I saw some rocks.",
+             userId: this.user.id
+           }]
+         }, {
+           include: {
+             model: Post,
+             as: "posts"
+           }
+         })
+         .then((topic) => {
+           this.topic = topic; //store the topic
+           this.post = topic.posts[0]; //store the post
+           done();
+         })
+       })
+     });
+   });
 
   //begin test specs
   describe("#create()", () => {
 
-    it("should create a post object with a title, body and assigned topic", (done) => {
+    it("should create a post object with a title, body and assigned topic and user", (done) => {
 
       Post.create({
         title: "Pros of Cryosleep during the long journey",
         body: "1. Not having to answer the 'are we there yet?' question.",
 
         //this associates the post to the topic.
-        topicId: this.topic.id
+        topicId: this.topic.id,
+        userId: this.user.id
       })
       .then((post) => {
 
         expect(post.title).toBe("Pros of Cryosleep during the long journey");
         expect(post.body).toBe("1. Not having to answer the 'are we there yet?' question.");
+        expect(post.userId).toBe(this.user.id);
         done();
 
 
@@ -106,7 +108,7 @@ describe("Post", () => {
          this.post.setTopic(newTopic)
          .then((post) => {
 // #4
-        
+
            expect(post.topicId).toBe(newTopic.id);
            done();
 
@@ -128,6 +130,44 @@ describe("Post", () => {
      });
 
    });
+
+   describe("#setUser()", () => {
+
+     it("should associate a post and a user together", (done) => {
+
+            User.create({
+              email: "ada@example.com",
+              password: "password"
+            })
+            .then((newUser) => {
+
+              expect(this.post.userId).toBe(this.user.id);
+
+              this.post.setUser(newUser)
+              .then((post) => {
+
+                expect(this.post.userId).toBe(newUser.id);
+                done();
+
+              });
+            })
+          });
+
+    });
+
+    describe("#getUser()", () => {
+
+        it("should return the associated topic", (done) => {
+
+          this.post.getUser()
+          .then((associatedUser) => {
+            expect(associatedUser.email).toBe("starman@tesla.com");
+            done();
+          });
+
+        });
+
+    });
 
 
 

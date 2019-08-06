@@ -4,6 +4,8 @@ const Post = require("./models").Post;
 
 const Flair = require("./models").Flair;
 
+const User = require("./models").User;
+
 module.exports = {
 
   getAllTopics(callback){
@@ -52,34 +54,65 @@ module.exports = {
   },
 
   deleteTopic(id, callback){
-    return Topic.destroy({
-      where: {id}
-    })
-    .then((topic) => {
-      callback(null, topic);
-    })
-    .catch((err) => {
-      callback(err);
-    })
+    // #1
+       return Topic.findAll(req.params.id)
+       .then((topic) => {
+
+   // #2
+         const authorized = new Authorizer(req.user, topic).destroy();
+
+         if(authorized) {
+   // #3
+           topic.destroy()
+           .then((res) => {
+             callback(null, topic);
+           });
+
+         } else {
+
+   // #4
+           req.flash("notice", "You are not authorized to do that.")
+           callback(401);
+         }
+       })
+       .catch((err) => {
+         callback(err);
+       });
   },
 
   updateTopic(id, updatedTopic, callback){
-     return Topic.findById(id)
-     .then((topic) => {
-       if(!topic){
-         return callback("Topic not found");
-       }
 
-       topic.update(updatedTopic, {
-        fields: Object.keys(updatedTopic)
-      })
-      .then(() => {
-        callback(null, topic);
-      })
-      .catch((err) => {
-        callback(err);
-      });
-    });
+  // #1
+       return Topic.findById(req.params.id)
+       .then((topic) => {
+
+  // #2
+         if(!topic){
+           return callback("Topic not found");
+         }
+
+  // #3
+         const authorized = new Authorizer(req.user, topic).update();
+
+         if(authorized) {
+
+  // #4
+           topic.update(updatedTopic, {
+             fields: Object.keys(updatedTopic)
+           })
+           .then(() => {
+             callback(null, topic);
+           })
+           .catch((err) => {
+             callback(err);
+           });
+         } else {
+
+  // #5
+           req.flash("notice", "You are not authorized to do that.");
+           callback("Forbidden");
+         }
+       });
   },
 
 

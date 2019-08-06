@@ -3,27 +3,218 @@ const server =  require("../../src/server");
 const base = "http://localhost:3000/topics/";
 const sequelize = require("../../src/db/models/index").sequelize;
 const Topic = require("../../src/db/models").Topic;
+const User = require("../../src/db/models").User;
+
+function authorizeUser(role, done) {
+  User.create({
+    email: "user@example.com",
+    password: "pass",
+    role: role
+  })
+  .then((user) => {
+    request.get({
+      url: "http://localhost:3000/auth/fake",
+      form: {
+        role: user.role,
+        userId: user.id,
+        email: user.email
+      }
+    },
+      (err, res, body) => {
+        done();
+      }
+    );
+  });
+}
+
 
 describe("routes : topics", () => {
 
 
-  beforeEach((done) => {
-      this.topic;
-      sequelize.sync({force: true}).then((res) => {
+  beforeEach((done) => { // before each context
+   this.topic;   // define variables and bind to context
+   sequelize.sync({ force: true }).then(() => {  // clear database
+     Topic.create({
+       title: "JS Frameworks",
+       description: "There is a lot of them"
+     })
+     .then((res) => {
+       this.topic = res;  // store resulting topic in context
+       done();
+     })
+     .catch((err) => {
+       console.log(err);
+       done();
+     })
+   });
+ });
 
-       Topic.create({
-         title: "JS Frameworks",
-         description: "There is a lot of them"
-       })
-        .then((topic) => {
-          this.topic = topic;
-          done();
-        })
-        .catch((err) => {
-          console.log(err);
-          done();
-        });
+  describe("admin user performing CRUD actions for Topic", () => {
+
+    beforeEach((done) => {
+      authorizeUser("admin", done);
+    });
+
+   describe("GET /topics", () => {
+
+       it("should respond with all topics", (done) => {
+
+
+
+         request.get(base, (err, res, body) => {
+
+           expect(err).toBeNull();
+           expect(body).toContain("Topics");
+           expect(body).toContain("JS Frameworks");
+           done();
+         });
+       });
+
+   });
+
+     describe("GET /topics/new", () => {
+
+       it("should render a view with a new topic form", (done) => {
+         request.get(`${base}new`, (err, res, body) => {
+           expect(err).toBeNull();
+           expect(body).toContain("New Topic");
+           done();
+         });
+       });
+
+     });
+
+     describe("POST /topics/create", () => {
+
+       const options = {
+         url: `${base}create`,
+         form: {
+           title: "blink-182 songs",
+           description: "What's your favorite blink-182 song?"
+         }
+       };
+
+       it("should create a new topic and redirect", (done) => {
+
+         request.post(options,
+
+           (err, res, body) => {
+               Topic.findOne({where: {title:  "blink-182 songs"}})
+               .then((topic) => {
+                 expect(topic.title).toBe("blink-182 songs");
+                 expect(topic.description).toBe("What's your favorite blink-182 song?");
+                 done();
+               })
+               .catch((err) => {
+                 console.log(err);
+                 done();
+               });
+           }
+        );
       });
+    }); //end of post tests for creating topics
+
+
+     describe("GET /topics/:id", () => {
+
+       it("should render a view with the selected topic", (done) => {
+         request.get(`${base}${this.topic.id}`, (err, res, body) => {
+           expect(err).toBeNull();
+           expect(body).toContain("JS Frameworks");
+           done();
+         });
+       });
+
+     });
+
+     describe("POST /topics/:id/destroy", () => {
+
+       it("should delete the topic with the associated ID", (done) => {
+
+         Topic.all()
+         .then((topics) => {
+
+           const topicCountBeforeDelete = topics.length;
+
+           expect(topicCountBeforeDelete).toBe(1);
+
+           request.post(`${base}${this.topic.id}/destroy`, (err, res, body) => {
+             Topic.all()
+             .then((topics) => {
+               expect(err).toBeNull();
+               expect(topics.length).toBe(topicCountBeforeDelete-1);
+               done();
+             })
+
+           });
+         });
+
+       });
+
+     });
+
+   //**********************************************************
+   //  SLOW      DOWN     CHEIF
+   //**********************************************************
+
+
+     describe("GET /topics/:id/edit", () => {
+
+       it("should render a view with an edit topic form", (done) => {
+         request.get(`${base}${this.topic.id}/edit`, (err, res, body) => {
+           expect(err).toBeNull();
+           expect(body).toContain("Edit Topic");
+           expect(body).toContain("JS Frameworks");
+           done();
+         });
+       });
+
+     });
+
+
+     describe("POST /topics/:id/update", () => {
+
+        it("should update the topic with the given values", (done) => {
+           const options = {
+              url: `${base}${this.topic.id}/update`,
+              form: {
+                title: "JavaScript Frameworks",
+                description: "There are a lot of them"
+              }
+            };
+   //#1
+            request.post(options,
+              (err, res, body) => {
+
+              expect(err).toBeNull();
+   //#2
+              Topic.findOne({
+                where: { id: 1 }
+              })
+              .then((topic) => {
+                expect(topic.title).toBe("JavaScript Frameworks");
+                done();
+              });
+            });
+        });
+
+      }); //end update spec
+
+
+  })// end of admin suite
+
+
+/************************************************************
+
+                    MEMBER TEST SUITE BELOW
+
+****************************************************************/
+
+
+  describe("member user performing CRUD actions for Topic", () => {
+
+    beforeEach((done) => {
+      authorizeUser("member", done);
     });
 
 
@@ -45,16 +236,13 @@ describe("routes : topics", () => {
 
   describe("GET /topics/new", () => {
 
-    it("should render a new topic form", (done) => {
+    it("should redirect to topics view", (done) => {
       request.get(`${base}new`, (err, res, body) => {
         expect(err).toBeNull();
-
-        expect(body).toContain("New Topic");
+        expect(body).toContain("Topics");
         done();
       });
     });
-
-
   });
 
   describe("POST /topics/create", () => {
@@ -67,60 +255,23 @@ describe("routes : topics", () => {
       }
     };
 
-    it("should create a new topic and redirect", (done) => {
+    it("should NOT create a new topic", (done) => {
 
       request.post(options,
 
         (err, res, body) => {
             Topic.findOne({where: {title:  "blink-182 songs"}})
             .then((topic) => {
-              expect(res.statusCode).toBe(303);
-              expect(topic.title).toBe("blink-182 songs");
-              expect(topic.description).toBe("What's your favorite blink-182 song?");
+              expect(topic).toBeNull()
               done();
             })
             .catch((err) => {
               console.log(err);
               done();
             });
-        }
-     );
-   });
-
-   it("should NOT create a new Topic that fails validations", (done) => {
-
-     const options = {
-       url: `${base}create`,
-       form: {
-          title: "a",
-          description: "b"
-       }
-     };
-
-     request.post(options,
-
-       (err, res, body) => {
-
-
-           Topic.findOne({ where: {title: "a"}})
-           .then((topic) => {
-             expect(topic).toBeNull();
-
-             done();
-           })
-           .catch((err) => {
-             console.log(err);
-             done();
-           });
-        }
-     );
-
-   });
-
-
-
-
-
+          }
+        );
+    });
   }); //end of post tests for creating topics
 
 
@@ -138,7 +289,7 @@ describe("routes : topics", () => {
 
   describe("POST /topics/:id/destroy", () => {
 
-    it("should delete the topic with the associated ID", (done) => {
+    it("should NOT delete the topic with the associated ID", (done) => {
 
       Topic.all()
       .then((topics) => {
@@ -150,8 +301,7 @@ describe("routes : topics", () => {
         request.post(`${base}${this.topic.id}/destroy`, (err, res, body) => {
           Topic.all()
           .then((topics) => {
-            expect(err).toBeNull();
-            expect(topics.length).toBe(topicCountBeforeDelete-1);
+            expect(topics.length).toBe(topicCountBeforeDelete);
             done();
           })
 
@@ -162,35 +312,29 @@ describe("routes : topics", () => {
 
   });
 
-//**********************************************************
-//  SLOW      DOWN     CHEIF
-//**********************************************************
-
-
   describe("GET /topics/:id/edit", () => {
 
     it("should render a view with an edit topic form", (done) => {
       request.get(`${base}${this.topic.id}/edit`, (err, res, body) => {
         expect(err).toBeNull();
-        expect(body).toContain("Edit Topic");
-        expect(body).toContain("JS Frameworks");
+        expect(body).not.toContain("Edit Topic");
+        expect(body).toContain("JS Frameworks"); //will confirm redirect to correct view
         done();
       });
     });
 
   });
 
-
   describe("POST /topics/:id/update", () => {
 
-     it("should update the topic with the given values", (done) => {
+     it("should NOT update the topic with the given values", (done) => {
         const options = {
            url: `${base}${this.topic.id}/update`,
            form: {
              title: "JavaScript Frameworks",
              description: "There are a lot of them"
            }
-         };
+         }
 //#1
          request.post(options,
            (err, res, body) => {
@@ -201,7 +345,7 @@ describe("routes : topics", () => {
              where: { id: this.topic.id }
            })
            .then((topic) => {
-             expect(topic.title).toBe("JavaScript Frameworks");
+             expect(topic.title).toBe("JavaScript Frameworks"); //confirm unchanged title
              done();
            });
          });
@@ -209,5 +353,6 @@ describe("routes : topics", () => {
 
    }); //end update spec
 
+ });//end 'member' tests
 
-});
+});//end all tests

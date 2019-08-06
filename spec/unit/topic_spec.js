@@ -1,45 +1,53 @@
 const sequelize = require("../../src/db/models/index").sequelize;
 const Topic = require("../../src/db/models").Topic;
 const Post = require("../../src/db/models").Post;
+const User = require("../../src/db/models").User;
 
 
 describe("Topic", () => {
 
       beforeEach((done) => {
-
-    //declaring two variables to test.
         this.topic;
-        this.post;
-        //clear out the db before each test
-        sequelize.sync({ force: true}).then((res) => {
+     this.post;
+     this.user;
 
-          //make a new topic each time
-          Topic.create({
-            title: "Expeditions to Alpha Centauri",
-            description: "A compilation of reports from recent visits to the star system."
-          })
-          .then((topic) => {
-            this.topic = topic;
+     sequelize.sync({force: true}).then((res) => {
 
-            //make a new post to test each time
-            Post.create({
-              title: "My first visit to proxima centauri b",
-              body: "i saw some rocks.",
-              topicId: this.topic.id
-            })
-            .then((post) => {
-              this.post = post;
-              done();
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-            done();
-          });
-        });
+// #2
+       User.create({
+         email: "starman@tesla.com",
+         password: "Trekkie4lyfe"
+       })
+       .then((user) => {
+         this.user = user; //store the user
 
+// #3
+         Topic.create({
+           title: "Expeditions to Alpha Centauri",
+           description: "A compilation of reports from recent visits to the star system.",
 
-      }); ///end pre test conditions
+// #4
+           posts: [{
+             title: "My first visit to Proxima Centauri b.",
+             body: "I saw some rocks.",
+             userId: this.user.id
+           }]
+         }, {
+
+// #5
+           include: {
+             model: Post,
+             as: "posts"
+           }
+         })
+         .then((topic) => {
+           this.topic = topic; //store the topic
+           this.post = topic.posts[0]; //store the post
+           done();
+         })
+       })
+     });
+   });
 
 
     describe("#create()", () => {
@@ -94,7 +102,7 @@ describe("Topic", () => {
 
            this.topic.getPosts()
            .then((postsArray) => {
-             expect(postsArray[0].title).toBe("My first visit to proxima centauri b");
+             expect(postsArray[0].title).toBe("My first visit to Proxima Centauri b.");
              done();
            })
 
@@ -107,8 +115,8 @@ describe("Topic", () => {
 
            this.topic.getPosts()
            .then((associatedPost) => {
-             expect(associatedPost[0].title).toBe("My first visit to proxima centauri b");
-             expect(associatedPost[0].body).toBe("i saw some rocks.");
+             expect(associatedPost[0].title).toBe("My first visit to Proxima Centauri b.");
+             expect(associatedPost[0].body).toBe("I saw some rocks.");
              done();
            });
          });

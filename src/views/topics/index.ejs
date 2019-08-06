@@ -19,10 +19,16 @@
 
           <li class="list-group-item">
             <a href="/topics/<%= topic.id %>"> <%= topic.title %> </a>
-            
+
           </li>
         <% }) %>
       </ul>
+
+      <div>
+            <% if(currentUser && currentUser.isAdmin()) { %>
+                    <a href="/topics/new" class="btn btn-success">New Topic</a>
+            <% } %>
+      </div>
 
 
 
